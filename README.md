@@ -45,3 +45,43 @@ strong-copyleft upstreams (GPL family).
 Original license. Specific to the Arcadia project — references Arcadia's
 runtime, module system, and shell. CLL is the generalized version of this
 license; use CLL for new projects, ACL for Arcadia itself.
+
+## Tooling — `update_license.py`
+
+Python script (stdlib only, no deps) to install/refresh a license in any
+repo and manage its Excluded Entity Restriction Addendum. Run it from a
+license root with a repo path, or from inside the target repo (path
+defaults to the current directory).
+
+### `refresh` — install or update the license
+
+Pulls the standard license text from the canonical repo and writes it to
+the target's `LICENSE.md`. Any project-specific addenda already present
+(e.g. an Excluded Entity Restriction Addendum) are detected and preserved
+verbatim below the refreshed text.
+
+```sh
+python3 update_license.py refresh --license CLL /path/to/repo
+cd /path/to/repo && python3 /path/to/update_license.py refresh -l CFL
+```
+
+`--license` / `-l` is required: `CLL`, `ACL`, or `CFL`.
+
+### `exclude` — manage the Excluded Entity Restriction Addendum
+
+Add, remove, list, or wipe excluded entities. Requires a `LICENSE.md` to
+exist (run `refresh` first).
+
+```sh
+python3 update_license.py exclude --add "Corgi s.r.o." /path/to/repo
+python3 update_license.py exclude --remove "Corgi s.r.o." /path/to/repo
+python3 update_license.py exclude --list /path/to/repo
+python3 update_license.py exclude --wipe /path/to/repo
+```
+
+- `--add` creates the addendum if absent; duplicate names are ignored.
+- `--remove` drops one entity; removing the last one deletes the whole
+  addendum.
+- `--wipe` removes the entire addendum.
+- `--list` prints the current excluded entities.
+- Repo path is optional and defaults to the current directory.
